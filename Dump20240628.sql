@@ -71,3 +71,79 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2024-06-28 11:08:43
+SELECT * FROM fasna.laptop_tabl;
+use fasna;
+
+
+
+-- weight
+UPDATE laptop_tabl SET Weight = REPLACE(Weight, 'kg', '');
+SELECT * FROM fasna.laptop_tabl;
+ALTER TABLE laptop_tabl MODIFY COLUMN Weight FLOAT;
+
+
+-- Resolution
+ALTER TABLE laptop_tabl ADD COLUMN Touchscreen varchar(30);
+UPDATE laptop_tabl SET Touchscreen = 'yes' where ScreenResolution like '%Touchscreen%' ;
+UPDATE laptop_tabl SET Touchscreen = 'no' where ScreenResolution not like '%Touchscreen%' ;
+
+ALTER TABLE laptop_tabl ADD COLUMN Ips varchar(30);
+update laptop_tabl set Ips= 'yes' where ScreenResolution like '%Ips%' ;
+update laptop_tabl set Ips= 'no' where ScreenResolution not like '%Ips%' ;
+
+
+ALTER TABLE laptop_tabl ADD COLUMN FullHD varchar(30);
+update laptop_tabl set FullHD=  'yes' where ScreenResolution like '%FullHD%' ;
+update laptop_tabl set FullHD=  'no' where ScreenResolution not like '%FullHD%' ;
+
+UPDATE laptop_tabl SET ScreenResolution = SUBSTRING_INDEX(ScreenResolution, ' ', -1);
+
+
+
+--  cpu version
+ALTER TABLE laptop_tabl ADD COLUMN Cpu_version VARCHAR(255);
+ UPDATE laptop_tabl SET Cpu_version = CONCAT(SUBSTRING_INDEX(Cpu, ' ', 1), ' ',SUBSTRING_INDEX(SUBSTRING_INDEX(Cpu, ' ', 2), ' ', -1), ' ',SUBSTRING_INDEX(SUBSTRING_INDEX(Cpu, ' ', 3), ' ', -1));
+
+-- cpu_model
+alter table laptop_tabl add Cpu_model varchar(30);
+update laptop_tabl set Cpu_model =substring_index(Cpu_version,' ',1);
+
+UPDATE laptop_tabl SET Cpu_version = TRIM(SUBSTRING(Cpu_version, LOCATE(' ', Cpu_version) + 1));
+
+
+-- cpu_frequency
+UPDATE laptop_tabl SET Cpu = SUBSTRING_INDEX(Cpu, ' ', -1);
+update laptop_tabl set cpu=replace(cpu,'GHz',' ');
+alter table laptop_tabl change cpu cpu_frequency float;
+
+-- Ram
+update laptop_tabl set ram=replace(Ram,'GB',' ');
+alter table laptop_tabl change ram ram_gb int;
+
+-- price category
+ALTER TABLE laptop_tabl ADD COLUMN PriceCategory VARCHAR(20);
+UPDATE laptop_tabl SET PriceCategory = 'Affordable' WHERE Price < 30000;
+UPDATE laptop_tabl SET PriceCategory = 'Mid-Range' WHERE Price BETWEEN 30000 AND 70000;
+UPDATE laptop_tabl SET PriceCategory = 'Expensive' WHERE Price > 70000;
+
+
+
+-- memory
+ALTER TABLE laptop_tabl ADD COLUMN MemoryStr VARCHAR(255);
+UPDATE laptop_tabl SET MemoryStr = REPLACE(Memory, 'TB', '000GB');
+
+ALTER TABLE laptop_tabl DROP COLUMN Memory;
+
+
+
+
+-- gpu_model
+alter table laptop_tabl add Gpu_model varchar(30);
+update laptop_tabl set Gpu_model=substring_index(Gpu,' ',1);
+
+-- gpu_version
+UPDATE laptop_tabl SET Gpu = TRIM(SUBSTRING(Gpu, LOCATE(' ', Gpu) + 1));
+
+
+
+SELECT * FROM fasna.laptop_tabl;
